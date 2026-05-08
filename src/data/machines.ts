@@ -1,0 +1,203 @@
+import type { AutomatonExample, PdaExample, TuringExample } from "../types";
+
+export const automataExamples: AutomatonExample[] = [
+  {
+    id: "dfa-even-ones",
+    title: "DFA: even number of 1s",
+    kind: "DFA",
+    language: "L = { w in {0,1}* | w has an even number of 1s }",
+    alphabet: ["0", "1"],
+    defaultInput: "10110",
+    states: [
+      { id: "q_even", label: "q_even", x: 180, y: 145, start: true, accept: true },
+      { id: "q_odd", label: "q_odd", x: 460, y: 145 },
+    ],
+    transitions: {
+      q_even: {
+        "0": ["q_even"],
+        "1": ["q_odd"],
+      },
+      q_odd: {
+        "0": ["q_odd"],
+        "1": ["q_even"],
+      },
+    },
+  },
+  {
+    id: "nfa-contains-ab",
+    title: "NFA: contains ab",
+    kind: "NFA",
+    language: "L = { w in {a,b}* | w contains ab as a substring }",
+    alphabet: ["a", "b"],
+    defaultInput: "baba",
+    states: [
+      { id: "q0", label: "q0", x: 130, y: 145, start: true },
+      { id: "q1", label: "q1", x: 330, y: 145 },
+      { id: "q2", label: "q2", x: 530, y: 145, accept: true },
+    ],
+    transitions: {
+      q0: {
+        a: ["q0", "q1"],
+        b: ["q0"],
+      },
+      q1: {
+        b: ["q2"],
+      },
+      q2: {
+        a: ["q2"],
+        b: ["q2"],
+      },
+    },
+  },
+];
+
+export const pdaExamples: PdaExample[] = [
+  {
+    id: "pda-anbn",
+    title: "PDA: match a^n b^n",
+    language: "L = { a^n b^n | n >= 0 }",
+    defaultInput: "aaabbb",
+    acceptanceMode: "final-state",
+    startState: "q_push",
+    acceptStates: ["q_accept"],
+    startStack: ["$"],
+    stackBottomMarker: "$",
+    states: [
+      { id: "q_push", label: "q_push", x: 130, y: 145, start: true },
+      { id: "q_pop", label: "q_pop", x: 330, y: 145 },
+      { id: "q_accept", label: "q_accept", x: 530, y: 145, accept: true },
+    ],
+    transitions: [
+      {
+        id: "push-bottom",
+        from: "q_push",
+        to: "q_push",
+        read: "a",
+        pop: "$",
+        push: ["$", "A"],
+        label: "a, $ -> $A",
+      },
+      {
+        id: "push-a",
+        from: "q_push",
+        to: "q_push",
+        read: "a",
+        pop: "A",
+        push: ["A", "A"],
+        label: "a, A -> AA",
+      },
+      {
+        id: "first-b",
+        from: "q_push",
+        to: "q_pop",
+        read: "b",
+        pop: "A",
+        push: [],
+        label: "b, A -> eps",
+      },
+      {
+        id: "pop-b",
+        from: "q_pop",
+        to: "q_pop",
+        read: "b",
+        pop: "A",
+        push: [],
+        label: "b, A -> eps",
+      },
+      {
+        id: "finish",
+        from: "q_pop",
+        to: "q_accept",
+        read: null,
+        pop: "$",
+        push: ["$"],
+        label: "eps, $ -> $",
+        requireInputEnd: true,
+      },
+      {
+        id: "empty-word",
+        from: "q_push",
+        to: "q_accept",
+        read: null,
+        pop: "$",
+        push: ["$"],
+        label: "eps, $ -> $",
+        requireInputEnd: true,
+      },
+    ],
+  },
+];
+
+export const turingExamples: TuringExample[] = [
+  {
+    id: "tm-binary-increment",
+    title: "TM: binary increment",
+    task: "Input x becomes x + 1 in binary",
+    defaultInput: "1011",
+    blank: "_",
+    startState: "q_scan",
+    acceptStates: ["q_done"],
+    rejectStates: [],
+    states: [
+      { id: "q_scan", label: "q_scan", x: 135, y: 145, start: true },
+      { id: "q_carry", label: "q_carry", x: 330, y: 145 },
+      { id: "q_done", label: "q_done", x: 525, y: 145, accept: true },
+    ],
+    transitions: [
+      {
+        id: "scan-0",
+        from: "q_scan",
+        to: "q_scan",
+        read: "0",
+        write: "0",
+        move: "R",
+        label: "0 -> 0, R",
+      },
+      {
+        id: "scan-1",
+        from: "q_scan",
+        to: "q_scan",
+        read: "1",
+        write: "1",
+        move: "R",
+        label: "1 -> 1, R",
+      },
+      {
+        id: "start-carry",
+        from: "q_scan",
+        to: "q_carry",
+        read: "_",
+        write: "_",
+        move: "L",
+        label: "_ -> _, L",
+      },
+      {
+        id: "carry-1",
+        from: "q_carry",
+        to: "q_carry",
+        read: "1",
+        write: "0",
+        move: "L",
+        label: "1 -> 0, L",
+      },
+      {
+        id: "carry-0",
+        from: "q_carry",
+        to: "q_done",
+        read: "0",
+        write: "1",
+        move: "S",
+        label: "0 -> 1, S",
+      },
+      {
+        id: "carry-blank",
+        from: "q_carry",
+        to: "q_done",
+        read: "_",
+        write: "1",
+        move: "S",
+        label: "_ -> 1, S",
+      },
+    ],
+  },
+];
